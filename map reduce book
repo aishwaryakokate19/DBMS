@@ -1,0 +1,31 @@
+db.Book.insertMany([
+    { "Title": "Book A", "Author_name": "Author 1", "Borrowed_status": true, "Price": 350 },
+    { "Title": "Book B", "Author_name": "Author 2", "Borrowed_status": false, "Price": 250 },
+    { "Title": "Book C", "Author_name": "Author 1", "Borrowed_status": true, "Price": 400 },
+    { "Title": "Book D", "Author_name": "Author 3", "Borrowed_status": false, "Price": 150 },
+    { "Title": "Book E", "Author_name": "Author 2", "Borrowed_status": true, "Price": 320 },
+    { "Title": "Book F", "Author_name": "Author 1", "Borrowed_status": false, "Price": 450 }
+]);
+
+
+Display Author-wise List of Books
+For this requirement, we need to group the books by Author_name and list the book titles.
+
+Map Function:
+var mapFunction1 = function() {
+    emit(this.Author_name, this.Title); // Emit Author_name as the key and Title as the value
+};
+
+
+
+Reduce Function:
+var reduceFunction1 = function(author, titles) {
+    return titles; // Return the list of book titles for each author
+};
+
+Run MapReduce:
+db.Book.mapReduce(
+    mapFunction1,
+    reduceFunction1,
+    { out: "authorwise_books" }
+);
