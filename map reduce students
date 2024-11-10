@@ -1,0 +1,61 @@
+db.Student.insertMany([
+    { "roll_no": 1, "name": "Alice", "class": "TE", "dept": "CS", "aggregate_marks": 85 },
+    { "roll_no": 2, "name": "Bob", "class": "TE", "dept": "IT", "aggregate_marks": 78 },
+    { "roll_no": 3, "name": "Charlie", "class": "TE", "dept": "CS", "aggregate_marks": 92 },
+    { "roll_no": 4, "name": "David", "class": "SE", "dept": "IT", "aggregate_marks": 88 },
+    { "roll_no": 5, "name": "Eve", "class": "SE", "dept": "CS", "aggregate_marks": 76 },
+    { "roll_no": 6, "name": "Frank", "class": "BE", "dept": "CS", "aggregate_marks": 80 },
+    { "roll_no": 7, "name": "Grace", "class": "BE", "dept": "IT", "aggregate_marks": 70 }
+]);
+
+
+ Finding the Total Marks of Students of "TE" Class Department-wise
+Map Function:
+var mapFunction1 = function() {
+    if (this.class === "TE") {
+        emit(this.dept, this.aggregate_marks);
+    }
+};
+
+
+Reduce Function:
+var reduceFunction1 = function(dept, marks) {
+    return Array.sum(marks);
+};
+
+Run MapReduce:
+db.Student.mapReduce(
+    mapFunction1,
+    reduceFunction1,
+    { out: "total_marks_TE_department_wise" }
+);
+
+
+
+
+
+Finding the Highest Marks of Students of "SE" Class Department-wise
+Map Function:
+
+The map function will emit each student’s aggregate_marks only if their class is “SE,” grouped by department.
+
+
+var mapFunction2 = function() {
+    if (this.class === "SE") {
+        emit(this.dept, this.aggregate_marks);
+    }
+};
+Reduce Function:
+
+
+var reduceFunction2 = function(dept, marks) {
+    return Math.max.apply(null, marks);
+};
+Run MapReduce:
+
+
+db.Student.mapReduce(
+    mapFunction2,
+    reduceFunction2,
+    { out: "highest_marks_SE_department_wise" }
+);
