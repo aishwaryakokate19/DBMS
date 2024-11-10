@@ -1,0 +1,85 @@
+CREATE OR REPLACE PROCEDURE Calculate_Interest (
+    p_account_no IN NUMBER, 
+    p_interest_rate IN NUMBER
+) AS
+    v_balance Account.Balance%TYPE;
+    v_no_of_years Account.NoOfYears%TYPE;
+    v_interest_amt Earned_Interest.Interest_Amt%TYPE;
+BEGIN
+    -- Fetch Account Details based on Account_No
+    SELECT Balance, NoOfYears 
+    INTO v_balance, v_no_of_years
+    FROM Account
+    WHERE Account_No = p_account_no;
+    
+    -- Calculate Simple Interest
+    v_interest_amt := (v_balance * p_interest_rate * v_no_of_years) / 100;
+    
+    -- Insert calculated interest into Earned_Interest table
+    INSERT INTO Earned_Interest (Account_No, Interest_Amt)
+    VALUES (p_account_no, v_interest_amt);
+    
+    -- Display all records from Earned_Interest table
+    FOR rec IN (SELECT * FROM Earned_Interest) LOOP
+        DBMS_OUTPUT.PUT_LINE('Account_No: ' || rec.Account_No || ' | Interest_Amt: ' || rec.Interest_Amt);
+    END LOOP;
+    
+    COMMIT; -- Commit the transaction
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('No account found with Account_No ' || p_account_no);
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An error occurred: ' || SQLERRM);
+END Calculate_Interest;
+/
+
+
+
+
+-- Example of executing the procedure with Account_No 101 and Interest Rate 5%
+EXEC Calculate_Interest(101, 5);
+
+
+
+
+
+CREATE OR REPLACE FUNCTION Get_Accounts_Above_50K RETURN SYS_REFCURSOR AS
+    result_cursor SYS_REFCURSOR;
+BEGIN
+    OPEN result_cursor FOR
+        SELECT * FROM Account
+        WHERE Balance > 50000;
+    RETURN result_cursor;
+END Get_Accounts_Above_50K;
+/
+
+
+
+
+How to Execute the Function:
+To call the function and fetch the results, you can use the following:
+
+sql
+Copy code
+DECLARE
+    v_cursor SYS_REFCURSOR;
+    v_account_no Account.Account_No%TYPE;
+    v_cust_name Account.Cust_Name%TYPE;
+    v_balance Account.Balance%TYPE;
+    v_no_of_years Account.NoOfYears%TYPE;
+BEGIN
+    -- Get the cursor from the function
+    v_cursor := Get_Accounts_Above_50K;
+    
+    -- Loop through the result set
+    LOOP
+        FETCH v_cursor INTO v_account_no, v_cust_name, v_balance, v_no_of_years;
+        EXIT WHEN v_cursor%NOTFOUND;
+        
+        -- Display the results
+        DBMS_OUTPUT.PUT_LINE('Account_No: ' || v_account_no || ' | Cust_Name: ' || v_cust_name || ' | Balance: ' || v_balance);
+    END LOOP;
+    
+    CLOSE v_cursor; -- Close the cursor
+END;
+/
