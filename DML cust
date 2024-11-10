@@ -1,0 +1,41 @@
+ALTER TABLE Customer MODIFY Email_ID VARCHAR(20);
+
+
+Change the Column Email_ID to Not Null in the Customer Table
+ALTER TABLE Customer MODIFY Email_ID VARCHAR(20) NOT NULL;
+
+
+Display the Total Customers with Balance > 50,000 Rs
+SELECT COUNT(*) AS Total_Customers
+FROM Account
+WHERE Balance > 50000;
+
+Display Average Balance for Account Type = "Saving Account"
+SELECT AVG(Balance) AS Avg_Balance
+FROM Account
+WHERE Account_type = 'Saving Account';
+
+Display the Customer Details That Live in Pune or Whose Name Starts with 'A'
+SELECT *
+FROM Customer
+WHERE Cust_Address = 'Pune'
+   OR Name LIKE 'A%';
+
+
+Create a Table Saving_Account Using Account Table
+CREATE TABLE Saving_Account AS
+SELECT Account_no, BranchID, CustID, date_open, Balance
+FROM Account
+WHERE Account_type = 'Saving Account';
+
+
+Display the Customer Details Age-wise with Balance >= 20,000 Rs
+SELECT c.*
+FROM Customer c
+JOIN Account a ON c.CustID = a.CustID
+WHERE a.Balance >= 20000
+ORDER BY c.Age;
+
+
+
+
