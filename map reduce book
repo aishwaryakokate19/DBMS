@@ -29,3 +29,31 @@ db.Book.mapReduce(
     reduceFunction1,
     { out: "authorwise_books" }
 );
+
+
+
+
+
+
+. Display Author-wise List of Books Having Price Greater Than 300
+For this requirement, we need to modify the map function to check if the price of the book is greater than 300.
+
+Map Function:
+
+var mapFunction3 = function() {
+    if (this.Price > 300) {
+        emit(this.Author_name, this.Title); // Emit Author_name and Title for books with price > 300
+    }
+};
+Reduce Function:
+
+var reduceFunction3 = function(author, titles) {
+    return titles; // Return the list of book titles with price greater than 300 for each author
+};
+Run MapReduce:
+
+db.Book.mapReduce(
+    mapFunction3,
+    reduceFunction3,
+    { out: "authorwise_books_price_above_300" }
+);
