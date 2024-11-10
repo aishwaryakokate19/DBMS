@@ -1,0 +1,69 @@
+DECLARE
+    CURSOR product_cursor (min_price NUMBER, max_price NUMBER) IS
+        SELECT Product_id, Product_Name, Price
+        FROM Products
+        WHERE Price BETWEEN min_price AND max_price
+        AND Product_Type = 'Apparel';
+
+    v_Product_id Products.Product_id%TYPE;
+    v_Product_Name Products.Product_Name%TYPE;
+    v_Price Products.Price%TYPE;
+    
+    min_price NUMBER := &min_price;
+    max_price NUMBER := &max_price;
+BEGIN
+    OPEN product_cursor(min_price, max_price);
+
+    LOOP
+        FETCH product_cursor INTO v_Product_id, v_Product_Name, v_Price;
+        EXIT WHEN product_cursor%NOTFOUND;
+        
+        DBMS_OUTPUT.PUT_LINE('Product ID: ' || v_Product_id || ', Product Name: ' || v_Product_Name || ', Price: ' || v_Price);
+    END LOOP;
+
+    CLOSE product_cursor;
+END;
+/
+
+
+Explicit Cursor to Display All Products with Price Greater Than 5000
+
+DECLARE
+    CURSOR high_price_cursor IS
+        SELECT Product_id, Product_Name, Product_Type, Price
+        FROM Products
+        WHERE Price > 5000;
+
+    v_Product_id Products.Product_id%TYPE;
+    v_Product_Name Products.Product_Name%TYPE;
+    v_Product_Type Products.Product_Type%TYPE;
+    v_Price Products.Price%TYPE;
+BEGIN
+    OPEN high_price_cursor;
+
+    LOOP
+        FETCH high_price_cursor INTO v_Product_id, v_Product_Name, v_Product_Type, v_Price;
+        EXIT WHEN high_price_cursor%NOTFOUND;
+        
+        DBMS_OUTPUT.PUT_LINE('Product ID: ' || v_Product_id || ', Product Name: ' || v_Product_Name || ', Product Type: ' || v_Product_Type || ', Price: ' || v_Price);
+    END LOOP;
+
+    CLOSE high_price_cursor;
+END;
+/
+
+
+
+
+Implicit Cursor to Display the Number of Records Affected by an Update
+An implicit cursor automatically manages the SQL operation. Here, it increments the price of all products by 1000 and then displays the number of affected rows.
+
+sql
+Copy code
+BEGIN
+    UPDATE Products
+    SET Price = Price + 1000;
+
+    DBMS_OUTPUT.PUT_LINE(SQL%ROWCOUNT || ' rows were updated.');
+END;
+/
